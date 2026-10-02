@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Päivä
+</title>
+
+
+<style>
+
+.card {
+transition: transform 0.2s;
+}
+ 
+.card:hover {
+transform: translateY(-2px);
+}
+ 
+#weather {
+font-size: 1.5em;
+color: #0066cc;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.loading {
+    color: gray;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📅 Miltä päivä näyttää?</h1>
+
+    <div class="card">
+        <h2>☀️ Sää Oulussa</h2>
+        <div id="weather" class="loading">Ladataan säätä...</div>
+    </div>
+
+   <div class="card">
+<h2>🚌 Merikoskenkatu P2</h2>
+ 
+<div id="buses">
+Ladataan bussitietoja...
+</div>
+</div>
+
+    <div class="card">
+        <h2>🍽️ Oulun normaalikoulu</h2>
+      <div id="menu">
+<ul>
+<li>🍲 Lohikeitto</li>
+<li>🥗 Kasvisvaihtoehto</li>
+<li>🥖 Näkkileipä</li>
+<li>🥛 Maito</li>
+</ul>
+    </div>
+
+</div>
+
+<script>
+
+// Oulun sää
+
+fetch("https://api.open-meteo.com/v1/forecast?latitude=65.0121&longitude=25.4651&current=temperature_2m,wind_speed_10m"
+)
+.then(response => response.json())
+.then(data => {
+
+    document.getElementById("weather").innerHTML = `
+        <strong>${data.current.temperature_2m} °C</strong><br>
+        Tuuli ${data.current.wind_speed_10m} m/s
+    `;
+
+})
+.catch(error => {
+
+    document.getElementById("weather").innerHTML =
+        "Sään hakeminen epäonnistui.";
+
+    console.error(error);
+});
+const bussit = [
+{ linja: "1", minuutit: 4 },
+{ linja: "2", minuutit: 7 },
+{ linja: "3", minuutit: 2 },
+{ linja: "5", minuutit: 12 },
+{ linja: "8", minuutit: 5 }
+];
+ 
+document.getElementById("buses").innerHTML =
+bussit.map(b =>
+`<p><strong>${b.linja}</strong> • ${b.minuutit} min</p>`
+).join("");
+const ruokalista = [
+  {
+    nimi: "Kasvisvaihtoehto",
+    ruoat: [
+      "Punajuurikroketteja",
+      "Perunamuusia",
+      "Sinappia",
+      "Tomaattiketsuppia"
+    ]
+  },
+  {
+    nimi: "Pääruoka",
+    ruoat: [
+      "Uunimakkaraa",
+      "Perunamuusia",
+      "Sinappia",
+      "Tomaattiketsuppia"
+    ]
+  }
+];
+
+document.getElementById("menu").innerHTML =
+  ruokalista.map(menu => `
+    <div style="margin-bottom:15px">
+      <strong>${menu.nimi}</strong>
+      <ul>
+        ${menu.ruoat.map(ruoka => `<li>${ruoka}</li>`).join("")}
+      </ul>
+    </div>
+  `).join("");
+</script>
+
+</body>
+</html>
